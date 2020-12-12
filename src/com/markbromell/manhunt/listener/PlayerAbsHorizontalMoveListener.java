@@ -2,7 +2,6 @@ package com.markbromell.manhunt.listener;
 
 import com.markbromell.manhunt.PlayerRoleManager;
 import com.markbromell.manhunt.event.PlayerAbsHorizontalMoveEvent;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -13,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.CompassMeta;
 
 import java.util.Objects;
-import java.util.logging.Level;
 
 /**
  * Listener for Player movement so that compasses can track the target Player.

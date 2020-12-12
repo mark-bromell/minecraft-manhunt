@@ -43,4 +43,8 @@ public class PlayerRoleManager {
     public void removeHunter(Player player) {
         hunters.remove(player);
     }
+
+    public boolean isHunter(Player player) {
+        return hunters.contains(player);
+    }
 }
