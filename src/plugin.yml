@@ -1,0 +1,13 @@
+name: Manhunt
+version: 0.0.1
+author: Mark Bromell
+main: com.markbromell.manhunt.Manhunt
+api-version: 1.16
+
+commands:
+  hunter:
+    description: Set the players that will be hunting
+    usage: /hunter [<player1> <player2> ...]
+  hunted:
+    desciption: Set the player to be hunted
+    usage: /hunted [<player>]
