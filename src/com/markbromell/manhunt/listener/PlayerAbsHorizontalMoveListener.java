@@ -13,14 +13,12 @@ import org.bukkit.inventory.meta.CompassMeta;
 
 import java.util.Objects;
 
-/**
- * Listener for Player movement so that compasses can track the target Player.
- */
+/** Listener for Player movement so that compasses can track the target Player. */
 public class PlayerAbsHorizontalMoveListener implements Listener {
     private final PlayerRoleManager playerRoleManager;
 
-    // Last known locations for each world, makes sure the compass doesn't point to a location in the Players
-    // world while the target is in another world. Prevents false location tracking.
+    // Last known locations for each world, makes sure the compass doesn't point to a location in
+    // the Players world while the target is in another world. Prevents false location tracking.
     private Location overWorldLocation;
     private Location netherLocationFrom;
     private Location netherLocationTo;
@@ -40,14 +38,11 @@ public class PlayerAbsHorizontalMoveListener implements Listener {
         }
     }
 
-    /**
-     * Sets the last known location for the target Player for each world.
-     */
+    /** Sets the last known location for the target Player for each world. */
     private void setLocation(PlayerAbsHorizontalMoveEvent event) {
         if (inOverWorld(playerRoleManager.getHunted())) {
             overWorldLocation = event.getTo().clone();
-        }
-        else if (inNether(playerRoleManager.getHunted())) {
+        } else if (inNether(playerRoleManager.getHunted())) {
             netherLocationFrom = event.getFrom().clone();
             netherLocationTo = event.getTo().clone();
         }
@@ -55,15 +50,42 @@ public class PlayerAbsHorizontalMoveListener implements Listener {
 
     /**
      * Tracks the last known location of the target Player in the current Player's world.
+     *
      * @param player The Player that the compass target will be set on.
      */
     private void trackLocation(Player player) {
         if (inOverWorld(player)) {
             removeLodestonePoint(player);
             player.setCompassTarget(Objects.requireNonNull(overWorldLocation));
-        }
-        else if (inNether(player)) {
+        } else if (inNether(player)) {
             setLodestonePoint(player);
+        }
+    }
+
+    private boolean inOverWorld(Player player) {
+        return player.getWorld().getEnvironment() == World.Environment.NORMAL;
+    }
+
+    private boolean inNether(Player player) {
+        return player.getWorld().getEnvironment() == World.Environment.NETHER;
+    }
+
+    private void removeLodestonePoint(Player player) {
+        for (ItemStack itemStack : player.getInventory().getContents()) {
+            // Get a compass item stack.
+            if (itemStack != null && itemStack.getType() == Material.COMPASS) {
+                CompassMeta meta = (CompassMeta) itemStack.getItemMeta();
+                assert meta != null;
+
+                // Remove the lodestone from the compass meta so that it can work in the overworld.
+                meta.setLodestone(null);
+                meta.setLodestoneTracked(false);
+                itemStack.setItemMeta(meta);
+
+                // This break means that only the first compass item stack encountered will be
+                // modified.
+                break;
+            }
         }
     }
 
@@ -85,35 +107,10 @@ public class PlayerAbsHorizontalMoveListener implements Listener {
                 netherLocationFrom.setY(0);
                 player.getWorld().getBlockAt(netherLocationFrom).setType(Material.BEDROCK);
 
-                // This break means that only the first compass item stack encountered will be modified.
+                // This break means that only the first compass item stack encountered will
+                // be modified.
                 break;
             }
         }
-    }
-
-    private void removeLodestonePoint(Player player) {
-        for (ItemStack itemStack : player.getInventory().getContents()) {
-            // Get a compass item stack.
-            if (itemStack != null && itemStack.getType() == Material.COMPASS) {
-                CompassMeta meta = (CompassMeta) itemStack.getItemMeta();
-                assert meta != null;
-
-                // Remove the lodestone from the compass meta so that it can work in the over-world.
-                meta.setLodestone(null);
-                meta.setLodestoneTracked(false);
-                itemStack.setItemMeta(meta);
-
-                // This break means that only the first compass item stack encountered will be modified.
-                break;
-            }
-        }
-    }
-
-    private boolean inOverWorld(Player player) {
-        return player.getWorld().getEnvironment() == World.Environment.NORMAL;
-    }
-
-    private boolean inNether(Player player) {
-        return player.getWorld().getEnvironment() == World.Environment.NETHER;
     }
 }

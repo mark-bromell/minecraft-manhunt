@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerRoleManager {
-    private Player hunted;
     private final Set<Player> hunters;
+    private Player hunted;
 
     public PlayerRoleManager() {
         this.hunted = null;

@@ -4,32 +4,39 @@ import com.markbromell.manhunt.command.CommandHunted;
 import com.markbromell.manhunt.command.CommandHunter;
 import com.markbromell.manhunt.listener.PlayerMoveListener;
 import com.markbromell.manhunt.listener.PlayerRespawnListener;
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.Objects;
 
 public class Manhunt extends JavaPlugin {
     private PlayerRoleManager playerRoleManager;
-
-    @Override
-    public void onEnable() {
-        playerRoleManager = new PlayerRoleManager();
-        setEvents();
-        setCommands();
-    }
+    private PluginManager pluginManager;
 
     @Override
     public void onDisable() {
         getLogger().info("Manhunt plugin has stopped.");
     }
 
-    private void setEvents() {
-        getServer().getPluginManager().registerEvents(new PlayerMoveListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerRespawnListener(playerRoleManager), this);
+    @Override
+    public void onEnable() {
+        playerRoleManager = new PlayerRoleManager();
+        pluginManager = getServer().getPluginManager();
+        setEvents();
+        setCommandExecutors();
     }
 
-    private void setCommands() {
-        Objects.requireNonNull(getCommand("hunted")).setExecutor(new CommandHunted(playerRoleManager));
-        Objects.requireNonNull(getCommand("hunter")).setExecutor(new CommandHunter(playerRoleManager));
+    private void setEvents() {
+        pluginManager.registerEvents(new PlayerMoveListener(pluginManager), this);
+        pluginManager.registerEvents(new PlayerRespawnListener(playerRoleManager), this);
+    }
+
+    private void setCommandExecutors() {
+        CommandHunted commandHunted = new CommandHunted(playerRoleManager, this);
+        CommandHunter commandHunter = new CommandHunter(playerRoleManager, this);
+
+        Objects.requireNonNull(getCommand("hunted")).setExecutor(commandHunted);
+        Objects.requireNonNull(getCommand("hunter")).setExecutor(commandHunter);
     }
 }

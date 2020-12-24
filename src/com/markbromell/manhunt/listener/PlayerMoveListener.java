@@ -1,27 +1,34 @@
 package com.markbromell.manhunt.listener;
 
 import com.markbromell.manhunt.event.PlayerAbsHorizontalMoveEvent;
-import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
-
-import java.util.Objects;
+import org.bukkit.plugin.PluginManager;
 
 public class PlayerMoveListener implements Listener {
+    private final PluginManager pluginManager;
+
+    public PlayerMoveListener(PluginManager pluginManager) {
+        this.pluginManager = pluginManager;
+    }
+
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event) {
         updateAbsHorizontalMoveEvent(event);
     }
 
     private void updateAbsHorizontalMoveEvent(PlayerMoveEvent event) {
-        // If there's an absolute horizontal move event.
-        if ((event.getFrom().getBlockX() != Objects.requireNonNull(event.getTo()).getBlockX())
-                || (event.getFrom().getBlockZ() != Objects.requireNonNull(event.getTo()).getBlockZ())) {
-            PlayerAbsHorizontalMoveEvent absHorizontalMoveEvent = new PlayerAbsHorizontalMoveEvent(
-                    event.getPlayer(), event.getFrom(), event.getTo());
+        Location from = event.getFrom();
+        Location to = event.getTo();
+        assert to != null;
 
-            Bukkit.getPluginManager().callEvent(absHorizontalMoveEvent);
+        // If there's an absolute horizontal move event.
+        if (from.getBlockX() != to.getBlockX() || from.getBlockZ() != to.getBlockZ()) {
+            PlayerAbsHorizontalMoveEvent absHorizontalMoveEvent =
+                    new PlayerAbsHorizontalMoveEvent(event.getPlayer(), from, to);
+            pluginManager.callEvent(absHorizontalMoveEvent);
         }
     }
 }
