@@ -1,41 +1,59 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.PlayerRoleManager;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-public class CommandHunter implements CommandExecutor {
-    private final PlayerRoleManager playerRoleManager;
+public class CommandHunter implements CommandExecutor, TabCompleter {
+    private static final String ADD = "add";
+    private static final String REMOVE = "remove";
+    private static final String LIST = "list";
+
+    private final Map<String, CommandExecutor> secondaryExecutors;
     private final Server server;
 
     public CommandHunter(PlayerRoleManager playerRoleManager, Plugin plugin) {
-        this.playerRoleManager = playerRoleManager;
         this.server = plugin.getServer();
+        this.secondaryExecutors = new HashMap<String, CommandExecutor>() {{
+            put(ADD, new CommandHunterAdd(playerRoleManager, plugin));
+            put(REMOVE, new CommandHunterRemove(playerRoleManager, plugin));
+            put(LIST, new CommandHunterList(playerRoleManager, plugin));
+        }};
     }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String label,
                              String[] args) {
-        List<Player> players = Stream.of(args).map(server::getPlayer).collect(Collectors.toList());
-        playerRoleManager.setHunters(players);
-        giveCompassToHunters();
+        secondaryExecutors.get(args[0]).onCommand(commandSender, command, args[0],
+                Arrays.copyOfRange(args, 1, args.length));
         return true;
     }
 
-    private void giveCompassToHunters() {
-        for (Player player : playerRoleManager.getHunters()) {
-            ItemStack compass = new ItemStack(Material.COMPASS);
-            player.getWorld().dropItem(player.getLocation(), compass);
+    @Override
+    public List<String> onTabComplete(CommandSender commandSender, Command command, String label,
+                                      String[] args) {
+        List<String> suggestions = new ArrayList<>();
+
+        if (args.length == 1) {
+            suggestions.add(ADD);
+            suggestions.add(REMOVE);
+            suggestions.add(LIST);
         }
+
+        if (args.length >= 2 && (args[0].equals(ADD) || args[0].equals(REMOVE))) {
+            suggestions.addAll(server.getOnlinePlayers().stream()
+                    .map(Player::getName)
+                    .collect(Collectors.toList()));
+        }
+
+        return suggestions;
     }
 }

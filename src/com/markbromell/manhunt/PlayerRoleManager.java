@@ -32,16 +32,20 @@ public class PlayerRoleManager {
         return hunters;
     }
 
-    public void setHunters(Collection<Player> players) {
-        hunters.addAll(players);
-    }
-
     public void addHunter(Player player) {
         hunters.add(player);
     }
 
+    public void addHunters(Collection<Player> players) {
+        hunters.addAll(players);
+    }
+
     public void removeHunter(Player player) {
         hunters.remove(player);
+    }
+
+    public void removeHunters(Collection<Player> players) {
+        hunters.removeAll(players);
     }
 
     public boolean isHunter(Player player) {
