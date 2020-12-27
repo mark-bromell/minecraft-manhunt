@@ -2,6 +2,7 @@ package com.markbromell.manhunt;
 
 import com.markbromell.manhunt.command.*;
 import com.markbromell.manhunt.listener.HuntedMoveListener;
+import com.markbromell.manhunt.listener.PlayerJoinListener;
 import com.markbromell.manhunt.listener.HunterRespawnListener;
 import com.markbromell.manhunt.persistence.PlayerRoleYamlPersistence;
 import org.bukkit.command.TabExecutor;
@@ -9,6 +10,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.yaml.snakeyaml.Yaml;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +19,7 @@ import java.util.Objects;
 
 /** Main plugin class */
 public class Manhunt extends JavaPlugin {
+    private PlayerRoleYamlPersistence persistence;
     private RoleManager playerRoleManager;
 
     /**
@@ -32,8 +35,9 @@ public class Manhunt extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        PlayerRoleYamlPersistence persistence = new PlayerRoleYamlPersistence();
-        playerRoleManager = new PlayerRoleManager(persistence);
+        Yaml yaml = new Yaml();
+        persistence = new PlayerRoleYamlPersistence(yaml, getServer());
+        playerRoleManager = persistence.pull();
         registerListeners();
         setCommandExecutors();
     }
@@ -48,6 +52,7 @@ public class Manhunt extends JavaPlugin {
         List<Listener> listeners = new ArrayList<Listener>() {{
             add(new HuntedMoveListener(playerRoleManager, pluginManager));
             add(new HunterRespawnListener(playerRoleManager));
+            add(new PlayerJoinListener(persistence, playerRoleManager));
         }};
 
         listeners.forEach(listener -> pluginManager.registerEvents(listener, this));

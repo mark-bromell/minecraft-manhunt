@@ -12,6 +12,8 @@ public interface RoleManager {
 
     Set<Player> getHunters();
 
+    void setHunters(Set<Player> hunters);
+
     void addHunter(Player hunter);
 
     void addHunters(Collection<Player> hunters);

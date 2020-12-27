@@ -8,14 +8,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class PlayerRoleManager implements RoleManager {
-    private final Set<Player> hunters;
     private final RolePersistence persistence;
+    private Set<Player> hunters;
     private Player hunted;
 
     public PlayerRoleManager(RolePersistence persistence) {
-        this.hunters = new HashSet<>();
         this.persistence = persistence;
+        this.hunters = new HashSet<>();
         this.hunted = null;
+    }
+
+    public PlayerRoleManager(RolePersistence persistence, Set<Player> hunters, Player hunted) {
+        this.persistence = persistence;
+        this.hunters = hunters;
+        this.hunted = hunted;
     }
 
     @Override
@@ -32,6 +38,11 @@ public class PlayerRoleManager implements RoleManager {
     @Override
     public Set<Player> getHunters() {
         return hunters;
+    }
+
+    @Override
+    public void setHunters(Set<Player> hunters) {
+        this.hunters = hunters;
     }
 
     @Override
