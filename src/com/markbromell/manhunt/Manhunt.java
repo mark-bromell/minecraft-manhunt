@@ -3,6 +3,7 @@ package com.markbromell.manhunt;
 import com.markbromell.manhunt.command.*;
 import com.markbromell.manhunt.listener.HuntedMoveListener;
 import com.markbromell.manhunt.listener.HunterRespawnListener;
+import com.markbromell.manhunt.persistence.PlayerRoleYamlPersistence;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
@@ -16,7 +17,7 @@ import java.util.Objects;
 
 /** Main plugin class */
 public class Manhunt extends JavaPlugin {
-    private PlayerRoleManager playerRoleManager;
+    private RoleManager playerRoleManager;
 
     /**
      * Gets called when the plugin is stopped.
@@ -31,7 +32,8 @@ public class Manhunt extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        playerRoleManager = new PlayerRoleManager();
+        PlayerRoleYamlPersistence persistence = new PlayerRoleYamlPersistence();
+        playerRoleManager = new PlayerRoleManager(persistence);
         registerListeners();
         setCommandExecutors();
     }

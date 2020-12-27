@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.PlayerRoleManager;
+import com.markbromell.manhunt.RoleManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 
 /** Command to display the list of hunters */
 public class CommandHunterList extends TerminalCommand implements TabExecutor {
-    private final PlayerRoleManager playerRoleManager;
+    private final RoleManager playerRoleManager;
 
-    public CommandHunterList(PlayerRoleManager playerRoleManager, Plugin plugin) {
+    public CommandHunterList(RoleManager playerRoleManager, Plugin plugin) {
         this.playerRoleManager = playerRoleManager;
     }
 

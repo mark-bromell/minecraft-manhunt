@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.listener;
 
 import com.markbromell.manhunt.PlayerRoleManager;
+import com.markbromell.manhunt.RoleManager;
 import com.markbromell.manhunt.event.PlayerAbsHorizontalMoveEvent;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,13 +19,13 @@ import java.util.function.BiConsumer;
 
 /** Listener for hunted player movement. */
 public class HuntedMoveListener implements Listener {
-    private final PlayerRoleManager playerRoleManager;
+    private final RoleManager playerRoleManager;
     private final PluginManager pluginManager;
     private Location overworldLocation;
     private Location netherLocationFrom;
     private Location netherLocationTo;
 
-    public HuntedMoveListener(PlayerRoleManager playerRoleManager, PluginManager pluginManager) {
+    public HuntedMoveListener(RoleManager playerRoleManager, PluginManager pluginManager) {
         this.playerRoleManager = playerRoleManager;
         this.pluginManager = pluginManager;
     }

@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.PlayerRoleManager;
+import com.markbromell.manhunt.RoleManager;
 import jdk.nashorn.internal.ir.Terminal;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -16,10 +17,10 @@ import java.util.List;
 
 /** Command to set the hunted player. */
 public class CommandHunted extends TerminalCommand implements TabExecutor {
-    private final PlayerRoleManager playerRoleManager;
+    private final RoleManager playerRoleManager;
     private final Server server;
 
-    public CommandHunted(PlayerRoleManager playerRoleManager, Plugin plugin) {
+    public CommandHunted(RoleManager playerRoleManager, Plugin plugin) {
         this.playerRoleManager = playerRoleManager;
         this.server = plugin.getServer();
     }

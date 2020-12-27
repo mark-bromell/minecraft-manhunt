@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.listener;
 
 import com.markbromell.manhunt.PlayerRoleManager;
+import com.markbromell.manhunt.RoleManager;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,9 +10,9 @@ import org.bukkit.inventory.ItemStack;
 
 /** Listens for when a hunter respawns */
 public class HunterRespawnListener implements Listener {
-    private final PlayerRoleManager playerRoleManager;
+    private final RoleManager playerRoleManager;
 
-    public HunterRespawnListener(PlayerRoleManager playerRoleManager) {
+    public HunterRespawnListener(RoleManager playerRoleManager) {
         this.playerRoleManager = playerRoleManager;
     }
 

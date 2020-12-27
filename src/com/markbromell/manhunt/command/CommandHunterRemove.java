@@ -1,6 +1,6 @@
 package com.markbromell.manhunt.command;
 
-import com.markbromell.manhunt.PlayerRoleManager;
+import com.markbromell.manhunt.RoleManager;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -16,10 +16,10 @@ import java.util.stream.Stream;
 
 /** Command to remove hunters. */
 public class CommandHunterRemove implements TabExecutor {
-    private final PlayerRoleManager playerRoleManager;
+    private final RoleManager playerRoleManager;
     private final Server server;
 
-    public CommandHunterRemove(PlayerRoleManager playerRoleManager, Plugin plugin) {
+    public CommandHunterRemove(RoleManager playerRoleManager, Plugin plugin) {
         this.playerRoleManager = playerRoleManager;
         this.server = plugin.getServer();
     }
