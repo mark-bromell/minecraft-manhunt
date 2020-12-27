@@ -7,15 +7,21 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 
-public class PlayerRespawnListener implements Listener {
+/** Listens for when a hunter respawns */
+public class HunterRespawnListener implements Listener {
     private final PlayerRoleManager playerRoleManager;
 
-    public PlayerRespawnListener(PlayerRoleManager playerRoleManager) {
+    public HunterRespawnListener(PlayerRoleManager playerRoleManager) {
         this.playerRoleManager = playerRoleManager;
     }
 
+    /**
+     * Drops a compass at the hunters exact location in their world after they respawn.
+     *
+     * @param event The event information for the respawned player.
+     */
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
+    public void giveCompassToHunter(PlayerRespawnEvent event) {
         if (playerRoleManager.isHunter(event.getPlayer())) {
             ItemStack compass = new ItemStack(Material.COMPASS);
             event.getPlayer().getWorld().dropItem(event.getRespawnLocation(), compass);

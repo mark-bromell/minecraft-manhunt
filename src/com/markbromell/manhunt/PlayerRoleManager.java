@@ -15,11 +15,6 @@ public class PlayerRoleManager {
         this.hunters = new HashSet<>();
     }
 
-    public PlayerRoleManager(Player hunted, Set<Player> hunters) {
-        this.hunted = hunted;
-        this.hunters = hunters;
-    }
-
     public Player getHunted() {
         return hunted;
     }
@@ -50,5 +45,9 @@ public class PlayerRoleManager {
 
     public boolean isHunter(Player player) {
         return hunters.contains(player);
+    }
+
+    public boolean isHunted(Player player) {
+        return player.equals(hunted);
     }
 }

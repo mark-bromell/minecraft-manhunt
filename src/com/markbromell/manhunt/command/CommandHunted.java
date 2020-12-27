@@ -1,32 +1,43 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.PlayerRoleManager;
-import com.markbromell.manhunt.listener.PlayerAbsHorizontalMoveListener;
+import jdk.nashorn.internal.ir.Terminal;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CommandHunted implements CommandExecutor {
+/** Command to set the hunted player. */
+public class CommandHunted extends TerminalCommand implements TabExecutor {
     private final PlayerRoleManager playerRoleManager;
-    private final Plugin plugin;
     private final Server server;
-    private final PluginManager pluginManager;
 
     public CommandHunted(PlayerRoleManager playerRoleManager, Plugin plugin) {
         this.playerRoleManager = playerRoleManager;
-        this.plugin = plugin;
         this.server = plugin.getServer();
-        this.pluginManager = this.server.getPluginManager();
     }
 
+    /**
+     * Executes when the command is submitted.
+     * <p>
+     * Sets the hunted player.
+     *
+     * @param commandSender The sender of the command.
+     * @param command The command in context.
+     * @param alias The alias of the command.
+     * @param args The args of the command (appear after the alias).
+     *
+     * @return Success or failure of the command execution.
+     */
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String label,
+    public boolean onCommand(CommandSender commandSender, Command command, String alias,
                              String[] args) {
         Player hunted = server.getPlayer(args[0]);
         playerRoleManager.setHunted(hunted);
