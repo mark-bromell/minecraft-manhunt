@@ -1,26 +1,21 @@
 package com.markbromell.manhunt.command;
 
-import com.markbromell.manhunt.PlayerRoleManager;
-import com.markbromell.manhunt.RoleManager;
+import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.ChatColor;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /** Command to display the list of hunters */
 public class CommandHunterList extends TerminalCommand implements TabExecutor {
-    private final RoleManager playerRoleManager;
+    private final RoleManager roleManager;
 
-    public CommandHunterList(RoleManager playerRoleManager, Plugin plugin) {
-        this.playerRoleManager = playerRoleManager;
+    public CommandHunterList(final RoleManager roleManager) {
+        this.roleManager = roleManager;
     }
 
     /**
@@ -39,7 +34,7 @@ public class CommandHunterList extends TerminalCommand implements TabExecutor {
     public boolean onCommand(CommandSender commandSender, Command command, String alias,
                              String[] args) {
         String heading = ChatColor.DARK_PURPLE + "[Hunters]";
-        List<String> messages = playerRoleManager.getHunters().stream()
+        List<String> messages = roleManager.getPlayers().getHunters().stream()
                 .map(Player::getName)
                 .collect(Collectors.toList());
 

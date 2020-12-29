@@ -1,7 +1,6 @@
 package com.markbromell.manhunt.command;
 
-import com.markbromell.manhunt.PlayerRoleManager;
-import com.markbromell.manhunt.RoleManager;
+import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -9,7 +8,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +19,9 @@ public class CommandHunterAdd implements TabExecutor {
     private final RoleManager playerRoleManager;
     private final Server server;
 
-    public CommandHunterAdd(RoleManager playerRoleManager, Plugin plugin) {
+    public CommandHunterAdd(final RoleManager playerRoleManager, final Server server) {
         this.playerRoleManager = playerRoleManager;
-        this.server = plugin.getServer();
+        this.server = server;
     }
 
     /**

@@ -1,16 +1,12 @@
 package com.markbromell.manhunt.persistence;
 
-import com.markbromell.manhunt.PlayerRoleManager;
-import com.markbromell.manhunt.RoleManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
@@ -25,59 +21,88 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
         this.server = server;
     }
 
+    /**
+     * Updates the persistent storage of the player roles from the role manager.
+     *
+     * @param roleManager The role manager that will have its data persisted.
+     */
     @Override
-    public void push(RoleManager roleManager) {
+    public void push(final RoleManager roleManager) {
         try {
+            // Get the data in a workable format.
+            List<String> hunterData = roleManager.getPlayers().getHunters().stream()
+                    .map(player -> player.getUniqueId().toString())
+                    .collect(Collectors.toList());
+            Player hunted = roleManager.getPlayers().getHunted();
+
+            // Put the data in the yaml file.
             FileWriter writer = new FileWriter(PATH);
             Map<String, Object> data = new HashMap<>();
-            List<String> hunterNames = roleManager.getHunters().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList());
-            Player hunted = roleManager.getHunted();
-
-            data.put("hunters", hunterNames);
-            data.put("hunted", hunted == null ? null : hunted.getName());
-
+            data.put("hunters", hunterData);
+            data.put("hunted", hunted == null ? null : hunted.getUniqueId().toString());
             yaml.dump(data, writer);
         } catch (IOException e) {
             Bukkit.getLogger().log(Level.WARNING, "Unable to persist manhunt role data.");
         }
     }
 
+    /**
+     * Updates the role manager with role data if there is any stored for the server.
+     *
+     * @param roleManager The role manager to update.
+     */
     @Override
-    public RoleManager pull() {
+    public void pull(final RoleManager roleManager) {
         try {
+            // Get the data from the yaml file.
             Map<String, Object> data = getYamlData();
-            List<String> hunterNames = (List<String>) data.get("hunters");
-            String huntedName = (String) data.get("hunted");
+            List<String> huntersUuid = (List<String>) data.get("hunters");
+            String huntedUuid = (String) data.get("hunted");
 
-            Set<Player> hunters = getHuntersFromNames(hunterNames);
-            Player hunted = server.getPlayer(huntedName);
+            // Interpolate the data.
+            List<Player> hunters = getPlayersFromUuid(huntersUuid);
+            Player hunted =
+                    huntedUuid == null ? null : server.getPlayer(UUID.fromString(huntedUuid));
 
-            return new PlayerRoleManager(this, hunters, hunted);
+            // Update the role manager.
+            roleManager.getPlayers().setHunters(hunters);
+            roleManager.getPlayers().setHunted(hunted);
         } catch (YAMLException e) {
-            Bukkit.getLogger().log(Level.WARNING, "No stored data found for manhunt roles.");
-            return new PlayerRoleManager(this);
+            Bukkit.getLogger().log(Level.INFO, "No stored data found for manhunt roles.");
+        } catch (FileNotFoundException e) {
+            Bukkit.getLogger().log(Level.INFO, "File not found for manhunt roles.");
         }
     }
 
-    private Set<Player> getHuntersFromNames(List<String> hunterNames) {
-        Set<Player> hunters = new HashSet<>();
+    /**
+     * Gets a list of players from a list of UUIDs. It will only gather players that are online.
+     *
+     * @param uuidList The UUIDs to get the player objects from.
+     *
+     * @return Players that are online that are a match with a UUID.
+     */
+    private List<Player> getPlayersFromUuid(Collection<String> uuidList) {
+        List<Player> players = new ArrayList<>();
 
-        for (String hunterName : hunterNames) {
-            Player hunter = server.getPlayer(hunterName);
+        for (String uuid : uuidList) {
+            Player hunter = server.getPlayer(UUID.fromString(uuid));
             if (hunter != null) {
-                hunters.add(hunter);
+                players.add(hunter);
             }
         }
 
-        return hunters;
+        return players;
     }
 
-    private Map<String, Object> getYamlData() {
-        InputStream inputStream = this.getClass()
-                .getClassLoader()
-                .getResourceAsStream(PATH);
+    /**
+     * Generic method to get yaml data from the role file.
+     *
+     * @return Map of all the yaml file data.
+     *
+     * @throws FileNotFoundException Cannot find a file that is storing role data.
+     */
+    private Map<String, Object> getYamlData() throws FileNotFoundException {
+        InputStream inputStream = new FileInputStream(new File(PATH));
         return yaml.load(inputStream);
     }
 }

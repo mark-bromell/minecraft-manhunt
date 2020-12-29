@@ -1,7 +1,6 @@
 package com.markbromell.manhunt.listener;
 
-import com.markbromell.manhunt.PlayerRoleManager;
-import com.markbromell.manhunt.RoleManager;
+import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -10,10 +9,10 @@ import org.bukkit.inventory.ItemStack;
 
 /** Listens for when a hunter respawns */
 public class HunterRespawnListener implements Listener {
-    private final RoleManager playerRoleManager;
+    private final RoleManager roleManager;
 
-    public HunterRespawnListener(RoleManager playerRoleManager) {
-        this.playerRoleManager = playerRoleManager;
+    public HunterRespawnListener(final RoleManager roleManager) {
+        this.roleManager = roleManager;
     }
 
     /**
@@ -23,9 +22,11 @@ public class HunterRespawnListener implements Listener {
      */
     @EventHandler
     public void giveCompassToHunter(PlayerRespawnEvent event) {
-        if (playerRoleManager.isHunter(event.getPlayer())) {
+        if (roleManager.isHunter(event.getPlayer())) {
             ItemStack compass = new ItemStack(Material.COMPASS);
-            event.getPlayer().getWorld().dropItem(event.getRespawnLocation(), compass);
+            event.getPlayer()
+                    .getWorld()
+                    .dropItem(event.getRespawnLocation(), compass);
         }
     }
 }

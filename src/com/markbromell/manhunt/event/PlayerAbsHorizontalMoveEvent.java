@@ -6,8 +6,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * Holds information for when the player moves horizontally from one block to another.
- * 'Absolute' meaning that the absolute value of the x or z coordinate has changed value.
+ * Holds information for when the player moves horizontally from one block to another. 'Absolute'
+ * meaning that the absolute value of the x or z coordinate has changed value.
  */
 public class PlayerAbsHorizontalMoveEvent extends Event {
     private static final HandlerList HANDLER_LIST = new HandlerList();
@@ -22,17 +22,18 @@ public class PlayerAbsHorizontalMoveEvent extends Event {
         this.to = to;
     }
 
+    public static HandlerList getHandlerList() {
+        return HANDLER_LIST;
+    }
+
     @Override
     public HandlerList getHandlers() {
         return HANDLER_LIST;
     }
 
-    public static HandlerList getHandlerList() {
-        return HANDLER_LIST;
-    }
-
     /**
      * Gets the player that moved.
+     *
      * @return The player that moved.
      */
     public Player getPlayer() {
@@ -41,6 +42,7 @@ public class PlayerAbsHorizontalMoveEvent extends Event {
 
     /**
      * Gets the location the player moved from.
+     *
      * @return The location the player moved from.
      */
     public Location getFrom() {
@@ -49,6 +51,7 @@ public class PlayerAbsHorizontalMoveEvent extends Event {
 
     /**
      * Gets the location the player moved to.
+     *
      * @return The location the player moved to.
      */
     public Location getTo() {

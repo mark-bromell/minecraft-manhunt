@@ -1,8 +1,7 @@
 package com.markbromell.manhunt.listener;
 
-import com.markbromell.manhunt.PlayerRoleManager;
-import com.markbromell.manhunt.RoleManager;
 import com.markbromell.manhunt.event.PlayerAbsHorizontalMoveEvent;
+import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -19,14 +18,14 @@ import java.util.function.BiConsumer;
 
 /** Listener for hunted player movement. */
 public class HuntedMoveListener implements Listener {
-    private final RoleManager playerRoleManager;
+    private final RoleManager roleManager;
     private final PluginManager pluginManager;
     private Location overworldLocation;
     private Location netherLocationFrom;
     private Location netherLocationTo;
 
-    public HuntedMoveListener(RoleManager playerRoleManager, PluginManager pluginManager) {
-        this.playerRoleManager = playerRoleManager;
+    public HuntedMoveListener(final RoleManager roleManager, final PluginManager pluginManager) {
+        this.roleManager = roleManager;
         this.pluginManager = pluginManager;
     }
 
@@ -40,7 +39,7 @@ public class HuntedMoveListener implements Listener {
      */
     @EventHandler
     public void callAbsHorizontalMoveEvent(PlayerMoveEvent event) {
-        if (playerRoleManager.isHunted(event.getPlayer())) {
+        if (roleManager.isHunted(event.getPlayer())) {
             assert event.getTo() != null;
             if (event.getFrom().getBlockX() != event.getTo().getBlockX()
                     || event.getFrom().getBlockZ() != event.getTo().getBlockZ()) {
@@ -58,9 +57,9 @@ public class HuntedMoveListener implements Listener {
      */
     @EventHandler
     public void updateHunterTracking(PlayerAbsHorizontalMoveEvent event) {
-        if (playerRoleManager.isHunted(event.getPlayer())) {
+        if (roleManager.isHunted(event.getPlayer())) {
             setLastLocation(event);
-            playerRoleManager.getHunters().forEach(this::setCompassTarget);
+            roleManager.getPlayers().getHunters().forEach(this::setCompassTarget);
         }
     }
 
@@ -70,9 +69,9 @@ public class HuntedMoveListener implements Listener {
      * @param event The event triggered by the player moving a block.
      */
     private void setLastLocation(PlayerAbsHorizontalMoveEvent event) {
-        if (inOverworld(playerRoleManager.getHunted())) {
+        if (inOverworld(roleManager.getPlayers().getHunted())) {
             overworldLocation = event.getTo().clone();
-        } else if (inNether(playerRoleManager.getHunted())) {
+        } else if (inNether(roleManager.getPlayers().getHunted())) {
             netherLocationFrom = event.getFrom().clone();
             netherLocationTo = event.getTo().clone();
         }

@@ -1,18 +1,13 @@
-package com.markbromell.manhunt;
+package com.markbromell.manhunt.persistence;
 
 import org.bukkit.entity.Player;
 
 import java.util.Collection;
-import java.util.Set;
 
 public interface RoleManager {
-    Player getHunted();
+    PlayerRoles getPlayers();
 
     void setHunted(Player hunted);
-
-    Set<Player> getHunters();
-
-    void setHunters(Set<Player> hunters);
 
     void addHunter(Player hunter);
 
