@@ -3,6 +3,7 @@ package com.markbromell.manhunt.command;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,8 +34,8 @@ public class ParentCommand implements TabExecutor {
      * @return Success or failure of the command execution.
      */
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias,
-                             String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
+                             @NotNull String alias, String[] args) {
         String childAlias = args[0];
         String[] childArgs = Arrays.copyOfRange(args, 1, args.length);
         childExecutors.get(childAlias).onCommand(commandSender, command, childAlias, childArgs);
@@ -54,7 +55,8 @@ public class ParentCommand implements TabExecutor {
      * @return Success or failure of the command execution.
      */
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias,
+    public List<String> onTabComplete(@NotNull CommandSender commandSender,
+                                      @NotNull Command command, @NotNull String alias,
                                       String[] args) {
         if (args.length == 1) {
             return new ArrayList<>(childExecutors.keySet());

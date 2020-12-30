@@ -1,11 +1,12 @@
 package com.markbromell.manhunt.command;
 
+import com.markbromell.manhunt.Manhunt;
 import com.markbromell.manhunt.persistence.RoleManager;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,9 +32,9 @@ public class CommandHunterList extends TerminalCommand implements TabExecutor {
      * @return Success or failure of the command execution.
      */
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias,
-                             String[] args) {
-        String heading = ChatColor.DARK_PURPLE + "[Hunters]";
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
+                             @NotNull String alias, String[] args) {
+        String heading = Manhunt.HEADING + "[Hunters online]";
         List<String> messages = roleManager.getPlayers().getHunters().stream()
                 .map(Player::getName)
                 .collect(Collectors.toList());
@@ -42,8 +43,7 @@ public class CommandHunterList extends TerminalCommand implements TabExecutor {
             messages.add(0, heading);
             commandSender.sendMessage(messages.toArray(new String[0]));
         } else {
-            String message = ChatColor.YELLOW + "There are no hunters";
-            commandSender.sendMessage(message);
+            commandSender.sendMessage(Manhunt.INFO + "There are no hunters online.");
         }
         return true;
     }

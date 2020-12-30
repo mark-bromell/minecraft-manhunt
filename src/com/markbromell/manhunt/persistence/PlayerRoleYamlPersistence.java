@@ -1,5 +1,6 @@
 package com.markbromell.manhunt.persistence;
 
+import com.markbromell.manhunt.Manhunt;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
@@ -7,12 +8,14 @@ import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.error.YAMLException;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 public class PlayerRoleYamlPersistence implements RolePersistence {
-    private static final String PATH = "plugins/manhunt/roles.yml";
+    private static final Path ROLES_PATH = Paths.get(Manhunt.BASE_PATH.toString(), "roles.yml");
     private final Yaml yaml;
     private final Server server;
 
@@ -21,11 +24,6 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
         this.server = server;
     }
 
-    /**
-     * Updates the persistent storage of the player roles from the role manager.
-     *
-     * @param roleManager The role manager that will have its data persisted.
-     */
     @Override
     public void push(final RoleManager roleManager) {
         try {
@@ -36,7 +34,7 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
             Player hunted = roleManager.getPlayers().getHunted();
 
             // Put the data in the yaml file.
-            FileWriter writer = new FileWriter(PATH);
+            FileWriter writer = new FileWriter(ROLES_PATH.toString());
             Map<String, Object> data = new HashMap<>();
             data.put("hunters", hunterData);
             data.put("hunted", hunted == null ? null : hunted.getUniqueId().toString());
@@ -46,11 +44,6 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
         }
     }
 
-    /**
-     * Updates the role manager with role data if there is any stored for the server.
-     *
-     * @param roleManager The role manager to update.
-     */
     @Override
     public void pull(final RoleManager roleManager) {
         try {
@@ -102,7 +95,7 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
      * @throws FileNotFoundException Cannot find a file that is storing role data.
      */
     private Map<String, Object> getYamlData() throws FileNotFoundException {
-        InputStream inputStream = new FileInputStream(new File(PATH));
+        InputStream inputStream = new FileInputStream(ROLES_PATH.toFile());
         return yaml.load(inputStream);
     }
 }

@@ -1,12 +1,13 @@
 package com.markbromell.manhunt.command;
 
+import com.markbromell.manhunt.Manhunt;
 import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +36,16 @@ public class CommandHunted implements TabExecutor {
      * @return Success or failure of the command execution.
      */
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String alias,
-                             String[] args) {
+    public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
+                             @NotNull String alias, String[] args) {
         Player hunted = server.getPlayer(args[0]);
-        playerRoleManager.setHunted(hunted);
+        if (hunted == null) {
+            commandSender.sendMessage(Manhunt.ERROR + "Cannot set that player as the hunted, " +
+                    "make sure they are online, and you spell their name correctly.");
+        }
+        else if (playerRoleManager.setHunted(hunted)) {
+            commandSender.sendMessage(Manhunt.INFO + hunted.getName() + " has become the hunted!");
+        }
         return true;
     }
 
@@ -53,7 +60,8 @@ public class CommandHunted implements TabExecutor {
      * @return Each online player name.
      */
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String alias,
+    public List<String> onTabComplete(@NotNull CommandSender commandSender,
+                                      @NotNull Command command, @NotNull String alias,
                                       String[] args) {
         if (args.length >= 1) {
             return server.getOnlinePlayers().stream()
