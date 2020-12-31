@@ -37,9 +37,9 @@ public class PlayerInterpreter {
                 .collect(Collectors.joining(", "));
     }
 
-    public List<Player> difference(List<Player> list1, List<Player> list2) {
+    public List<String> difference(List<String> list1, List<String> list2) {
         return list1.stream()
-                .filter(player -> !list2.contains(player))
+                .filter(string -> !list2.contains(string))
                 .collect(Collectors.toList());
     }
 }

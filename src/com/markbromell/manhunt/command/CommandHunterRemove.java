@@ -3,6 +3,7 @@ package com.markbromell.manhunt.command;
 import com.markbromell.manhunt.Manhunt;
 import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -44,7 +46,8 @@ public class CommandHunterRemove implements TabExecutor {
 
         // Getting the players that were successfully removed as a hunter, and failed.
         List<Player> removed = roleManager.removeHunters(players);
-        List<Player> failed = playerInterpreter.difference(players, removed);
+        List<String> failed = playerInterpreter.difference(
+                Arrays.asList(args), playerInterpreter.getNames(removed));
 
         if (removed.size() == 0) {
             commandSender.sendMessage(Manhunt.ERROR + "No hunters were removed, make sure they " +
@@ -55,7 +58,7 @@ public class CommandHunterRemove implements TabExecutor {
         }
 
         if (failed.size() > 0) {
-            String failedString = playerInterpreter.commaSeparateNames(failed);
+            String failedString = String.join(", ", failed);
             commandSender.sendMessage(Manhunt.ERROR + "Hunters failed to remove: " + failedString);
         }
 

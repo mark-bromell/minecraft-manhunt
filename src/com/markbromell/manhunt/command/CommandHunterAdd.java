@@ -1,8 +1,10 @@
 package com.markbromell.manhunt.command;
 
+import com.beust.jcommander.Strings;
 import com.markbromell.manhunt.Manhunt;
 import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Command to add hunters. */
@@ -43,7 +46,8 @@ public class CommandHunterAdd implements TabExecutor {
 
         // Getting the players that were successfully added as a hunter, and failed.
         List<Player> added = roleManager.addHunters(players);
-        List<Player> failed = playerInterpreter.difference(players, added);
+        List<String> failed = playerInterpreter.difference(
+                Arrays.asList(args), playerInterpreter.getNames(added));
 
         if (added.size() == 0) {
             commandSender.sendMessage(Manhunt.ERROR + "No hunters were added, make sure they " +
@@ -54,7 +58,7 @@ public class CommandHunterAdd implements TabExecutor {
         }
 
         if (failed.size() > 0) {
-            String failedString = playerInterpreter.commaSeparateNames(failed);
+            String failedString = String.join(", ", failed);
             commandSender.sendMessage(Manhunt.ERROR + "Hunters failed to add: " + failedString);
         }
 

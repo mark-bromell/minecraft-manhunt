@@ -3,6 +3,7 @@ package com.markbromell.manhunt.command;
 import com.markbromell.manhunt.Manhunt;
 import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -46,8 +47,7 @@ public class CommandHunted implements TabExecutor {
         if (hunted == null) {
             commandSender.sendMessage(Manhunt.ERROR + "Cannot set that player as the hunted, " +
                     "make sure they are online, and you spell their name correctly.");
-        }
-        else if (playerRoleManager.setHunted(hunted)) {
+        } else if (playerRoleManager.setHunted(hunted)) {
             commandSender.sendMessage(Manhunt.INFO + hunted.getName() + " has become the hunted!");
         }
         return true;
