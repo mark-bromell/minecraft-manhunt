@@ -12,16 +12,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class PlayerRoleYamlPersistence implements RolePersistence {
     private static final Path ROLES_PATH = Paths.get(Manhunt.BASE_PATH.toString(), "roles.yml");
     private final Yaml yaml;
     private final Server server;
+    private final Logger log;
 
-    public PlayerRoleYamlPersistence(Yaml yaml, Server server) {
+    public PlayerRoleYamlPersistence(Yaml yaml, Server server, Logger log) {
         this.yaml = yaml;
         this.server = server;
+        this.log = log;
     }
 
     @Override
@@ -39,8 +42,9 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
             data.put("hunters", hunterData);
             data.put("hunted", hunted == null ? null : hunted.getUniqueId().toString());
             yaml.dump(data, writer);
+            log.info("Persisted manhunt role data into " + ROLES_PATH.toString());
         } catch (IOException e) {
-            Bukkit.getLogger().log(Level.WARNING, "Unable to persist manhunt role data.");
+            log.warning("Unable to persist manhunt role data");
         }
     }
 
@@ -60,10 +64,11 @@ public class PlayerRoleYamlPersistence implements RolePersistence {
             // Update the role manager.
             roleManager.getPlayers().setHunters(hunters);
             roleManager.getPlayers().setHunted(hunted);
+            log.info("Pulled manhunt role data from " + ROLES_PATH.toString());
         } catch (YAMLException e) {
-            Bukkit.getLogger().log(Level.INFO, "No stored data found for manhunt roles.");
+            log.info("No stored data found for manhunt roles");
         } catch (FileNotFoundException e) {
-            Bukkit.getLogger().log(Level.INFO, "File not found for manhunt roles.");
+            log.info("File not found for manhunt roles");
         }
     }
 

@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.Manhunt;
+import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -14,9 +15,11 @@ import java.util.stream.Collectors;
 /** Command to display the list of hunters */
 public class CommandHunterList extends TerminalCommand implements TabExecutor {
     private final RoleManager roleManager;
+    private final PlayerInterpreter playerInterpreter;
 
-    public CommandHunterList(final RoleManager roleManager) {
+    public CommandHunterList(RoleManager roleManager, PlayerInterpreter playerInterpreter) {
         this.roleManager = roleManager;
+        this.playerInterpreter = playerInterpreter;
     }
 
     /**
@@ -35,9 +38,7 @@ public class CommandHunterList extends TerminalCommand implements TabExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
                              @NotNull String alias, String[] args) {
         String heading = Manhunt.HEADING + "[Hunters online]";
-        List<String> messages = roleManager.getPlayers().getHunters().stream()
-                .map(Player::getName)
-                .collect(Collectors.toList());
+        List<String> messages = playerInterpreter.getNames(roleManager.getPlayers().getHunters());
 
         if (messages.size() > 0) {
             messages.add(0, heading);

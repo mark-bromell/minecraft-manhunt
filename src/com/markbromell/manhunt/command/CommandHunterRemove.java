@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.Manhunt;
+import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -17,11 +18,11 @@ import java.util.stream.Stream;
 /** Command to remove hunters. */
 public class CommandHunterRemove implements TabExecutor {
     private final RoleManager roleManager;
-    private final Server server;
+    private final PlayerInterpreter playerInterpreter;
 
-    public CommandHunterRemove(final RoleManager roleManager, final Server server) {
+    public CommandHunterRemove(RoleManager roleManager, PlayerInterpreter playerInterpreter) {
         this.roleManager = roleManager;
-        this.server = server;
+        this.playerInterpreter = playerInterpreter;
     }
 
     /**
@@ -39,22 +40,25 @@ public class CommandHunterRemove implements TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
                              @NotNull String alias, String[] args) {
-        List<Player> players = Stream.of(args)
-                .map(server::getPlayer)
-                .collect(Collectors.toList());
+        List<Player> players = playerInterpreter.getPlayers(args);
 
-        // Getting the players that were successfully removed as a hunter.
+        // Getting the players that were successfully removed as a hunter, and failed.
         List<Player> removed = roleManager.removeHunters(players);
+        List<Player> failed = playerInterpreter.difference(players, removed);
 
         if (removed.size() == 0) {
             commandSender.sendMessage(Manhunt.ERROR + "No hunters were removed, make sure they " +
                     "are online, and you spell their names correctly");
         } else {
-            String huntersRemoved = removed.stream()
-                    .map(Player::getName)
-                    .collect(Collectors.joining(", "));
-            commandSender.sendMessage(Manhunt.INFO + "Hunters removed: " + huntersRemoved);
+            String removedString = playerInterpreter.commaSeparateNames(removed);
+            commandSender.sendMessage(Manhunt.INFO + "Hunters removed: " + removedString);
         }
+
+        if (failed.size() > 0) {
+            String failedString = playerInterpreter.commaSeparateNames(failed);
+            commandSender.sendMessage(Manhunt.ERROR + "Hunters failed to remove: " + failedString);
+        }
+
         return true;
     }
 
@@ -72,12 +76,7 @@ public class CommandHunterRemove implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender commandSender,
                                       @NotNull Command command, @NotNull String alias,
                                       String[] args) {
-        if (args.length >= 1) {
-            return server.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList());
-        }
-
+        if (args.length >= 1) return playerInterpreter.getOnlineNames();
         return new ArrayList<>();
     }
 }

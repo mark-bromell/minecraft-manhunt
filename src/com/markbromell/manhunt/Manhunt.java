@@ -46,7 +46,7 @@ public class Manhunt extends JavaPlugin {
     @Override
     public void onEnable() {
         initBasePath();
-        rolePersistence = new PlayerRoleYamlPersistence(new Yaml(), getServer());
+        rolePersistence = new PlayerRoleYamlPersistence(new Yaml(), getServer(), getLogger());
         roleManager = new PlayerRoleManager(rolePersistence);
         registerListeners();
         setCommandExecutors();
@@ -88,12 +88,13 @@ public class Manhunt extends JavaPlugin {
      */
     private void setCommandExecutors() {
         log.info("Setting command executors");
-        CommandHunted hunted = new CommandHunted(roleManager, getServer());
+        PlayerInterpreter playerInterpreter = new PlayerInterpreter(getServer());
+        CommandHunted hunted = new CommandHunted(roleManager, getServer(), playerInterpreter);
 
         ParentCommand hunter = new ParentCommand(new HashMap<String, TabExecutor>() {{
-            put("add", new CommandHunterAdd(roleManager, getServer()));
-            put("remove", new CommandHunterRemove(roleManager, getServer()));
-            put("list", new CommandHunterList(roleManager));
+            put("add", new CommandHunterAdd(roleManager, playerInterpreter));
+            put("remove", new CommandHunterRemove(roleManager, playerInterpreter));
+            put("list", new CommandHunterList(roleManager, playerInterpreter));
         }});
 
         Objects.requireNonNull(getCommand("hunted")).setExecutor(hunted);

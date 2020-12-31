@@ -1,9 +1,9 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.Manhunt;
+import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Material;
-import org.bukkit.Server;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -13,17 +13,15 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /** Command to add hunters. */
 public class CommandHunterAdd implements TabExecutor {
     private final RoleManager roleManager;
-    private final Server server;
+    private final PlayerInterpreter playerInterpreter;
 
-    public CommandHunterAdd(final RoleManager roleManager, final Server server) {
+    public CommandHunterAdd(RoleManager roleManager, PlayerInterpreter playerInterpreter) {
         this.roleManager = roleManager;
-        this.server = server;
+        this.playerInterpreter = playerInterpreter;
     }
 
     /**
@@ -41,22 +39,23 @@ public class CommandHunterAdd implements TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command,
                              @NotNull String alias, String[] args) {
-        List<Player> players = Stream.of(args)
-                .map(server::getPlayer)
-                .collect(Collectors.toList());
+        List<Player> players = playerInterpreter.getPlayers(args);
 
-        // Getting the players that were successfully added as a hunter.
+        // Getting the players that were successfully added as a hunter, and failed.
         List<Player> added = roleManager.addHunters(players);
+        List<Player> failed = playerInterpreter.difference(players, added);
 
         if (added.size() == 0) {
             commandSender.sendMessage(Manhunt.ERROR + "No hunters were added, make sure they " +
                     "are online, and you spell their names correctly");
+        } else {
+            String addedString = playerInterpreter.commaSeparateNames(added);
+            commandSender.sendMessage(Manhunt.INFO + "Hunters added: " + addedString);
         }
-        else {
-            String huntersAdded = added.stream()
-                    .map(Player::getName)
-                    .collect(Collectors.joining(", "));
-            commandSender.sendMessage(Manhunt.INFO + "Hunters added: " + huntersAdded);
+
+        if (failed.size() > 0) {
+            String failedString = playerInterpreter.commaSeparateNames(failed);
+            commandSender.sendMessage(Manhunt.ERROR + "Hunters failed to add: " + failedString);
         }
 
         giveCompassToHunters(added);
@@ -77,12 +76,7 @@ public class CommandHunterAdd implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender commandSender,
                                       @NotNull Command command, @NotNull String alias,
                                       String[] args) {
-        if (args.length >= 1) {
-            return server.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList());
-        }
-
+        if (args.length >= 1) return playerInterpreter.getOnlineNames();
         return new ArrayList<>();
     }
 

@@ -1,6 +1,7 @@
 package com.markbromell.manhunt.command;
 
 import com.markbromell.manhunt.Manhunt;
+import com.markbromell.manhunt.PlayerInterpreter;
 import com.markbromell.manhunt.persistence.RoleManager;
 import org.bukkit.Server;
 import org.bukkit.command.Command;
@@ -16,10 +17,13 @@ import java.util.stream.Collectors;
 /** Command to set the hunted player. */
 public class CommandHunted implements TabExecutor {
     private final RoleManager playerRoleManager;
+    private final PlayerInterpreter playerInterpreter;
     private final Server server;
 
-    public CommandHunted(final RoleManager playerRoleManager, final Server server) {
+    public CommandHunted(RoleManager playerRoleManager, Server server,
+                         PlayerInterpreter playerInterpreter) {
         this.playerRoleManager = playerRoleManager;
+        this.playerInterpreter = playerInterpreter;
         this.server = server;
     }
 
@@ -63,12 +67,7 @@ public class CommandHunted implements TabExecutor {
     public List<String> onTabComplete(@NotNull CommandSender commandSender,
                                       @NotNull Command command, @NotNull String alias,
                                       String[] args) {
-        if (args.length >= 1) {
-            return server.getOnlinePlayers().stream()
-                    .map(Player::getName)
-                    .collect(Collectors.toList());
-        }
-
+        if (args.length >= 1) return playerInterpreter.getOnlineNames();
         return new ArrayList<>();
     }
 }
