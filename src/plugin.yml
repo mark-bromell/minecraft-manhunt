@@ -6,17 +6,9 @@ api-version: 1.16
 
 commands:
   hunter:
-    description: Adds players as hunters
+    description: Alter the roles of the players that are hunters
     usage: /hunter [add | remove | list] [<player1> <player2>...]
 
   hunted:
     desciption: Set the player to be hunted
     usage: /hunted <player>
-
-  start:
-    description: Starts the manhunt
-    usage: /start
-
-  end:
-    description: Ends the manhunt
-    usage: /end
